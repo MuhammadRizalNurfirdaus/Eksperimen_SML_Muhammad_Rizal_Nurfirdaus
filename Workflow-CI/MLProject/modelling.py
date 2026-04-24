@@ -58,6 +58,7 @@ with mlflow.start_run(run_name="LogisticRegression_CI") as run:
     print(f"\nAccuracy: {accuracy:.4f}")
     
     print(f"Run ID: {run.info.run_id} berhasil disimpan.")
+    # CI trigger
 
 print("DONE!")
 
