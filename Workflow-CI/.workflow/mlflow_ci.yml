@@ -32,7 +32,7 @@ jobs:
     - name: Run MLflow Project
       run: |
         cd Workflow-CI/MLProject
-        mlflow run . --no-conda
+        mlflow run . --env-manager local
       env:
         MLFLOW_TRACKING_URI: http://127.0.0.1:2026
 
