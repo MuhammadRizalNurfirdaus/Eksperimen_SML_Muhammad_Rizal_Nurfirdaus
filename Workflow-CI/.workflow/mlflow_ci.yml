@@ -39,7 +39,7 @@ jobs:
     - name: Extract Run ID
       id: extract_run
       run: |
-        RUN_ID=$(cat run_id.txt)
+        RUN_ID=$(python -c "import mlflow; mlflow.set_tracking_uri('http://127.0.0.1:5000'); df = mlflow.search_runs(experiment_names=['PUBG_Mobile_Sentiment_CI']); print(df['run_id'][0])")
         echo "MLFLOW_RUN_ID=$RUN_ID" >> $GITHUB_ENV
         echo "Run ID extracted: $RUN_ID"
 
