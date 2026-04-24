@@ -66,3 +66,4 @@ with mlflow.start_run(run_name="LogisticRegression_CI") as run:
     print(f"Run ID: {run_id} berhasil disimpan.")
 
 print("DONE!")
+
