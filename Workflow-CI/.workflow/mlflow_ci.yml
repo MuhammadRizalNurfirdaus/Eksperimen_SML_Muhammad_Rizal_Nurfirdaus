@@ -39,7 +39,7 @@ jobs:
     - name: Extract Run ID
       id: extract_run
       run: |
-        RUN_ID=$(cat Workflow-CI/MLProject/run_id.txt)
+        RUN_ID=$(cat run_id.txt)
         echo "MLFLOW_RUN_ID=$RUN_ID" >> $GITHUB_ENV
         echo "Run ID extracted: $RUN_ID"
 

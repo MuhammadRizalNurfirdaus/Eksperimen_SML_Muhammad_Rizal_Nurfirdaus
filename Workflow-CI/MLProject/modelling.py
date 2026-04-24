@@ -59,7 +59,8 @@ with mlflow.start_run(run_name="LogisticRegression_CI") as run:
     
     # Menuliskan RUN_ID ke sebuah file agar dapat diambil oleh GitHub Actions
     run_id = run.info.run_id
-    with open("run_id.txt", "w") as f:
+    workspace = os.environ.get("GITHUB_WORKSPACE", ".")
+    with open(os.path.join(workspace, "run_id.txt"), "w") as f:
         f.write(run_id)
         
     print(f"Run ID: {run_id} berhasil disimpan.")
