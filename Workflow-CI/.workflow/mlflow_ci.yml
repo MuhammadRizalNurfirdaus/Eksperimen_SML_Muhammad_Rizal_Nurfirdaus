@@ -26,7 +26,7 @@ jobs:
 
     - name: Run MLflow tracking server (Port 5000)
       run: |
-        mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow_ci.db --default-artifact-root ./mlruns &
+        mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow_ci.db --default-artifact-root $GITHUB_WORKSPACE/mlruns &
         sleep 5 # Wait for server to start
 
     - name: Run MLflow Project
