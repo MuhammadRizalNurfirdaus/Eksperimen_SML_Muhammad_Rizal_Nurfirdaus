@@ -24,9 +24,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install mlflow scikit-learn pandas numpy
 
-    - name: Run MLflow tracking server (Port 2026)
+    - name: Run MLflow tracking server (Port 5000)
       run: |
-        mlflow server --host 127.0.0.1 --port 2026 --backend-store-uri sqlite:///mlflow_ci.db --default-artifact-root ./mlruns &
+        mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow_ci.db --default-artifact-root ./mlruns &
         sleep 5 # Wait for server to start
 
     - name: Run MLflow Project
@@ -34,7 +34,7 @@ jobs:
         cd Workflow-CI/MLProject
         mlflow run . --env-manager local
       env:
-        MLFLOW_TRACKING_URI: http://127.0.0.1:2026
+        MLFLOW_TRACKING_URI: http://127.0.0.1:5000
 
     - name: Extract Run ID
       id: extract_run
@@ -47,7 +47,7 @@ jobs:
       run: |
         mlflow models build-docker -m "runs:/${{ env.MLFLOW_RUN_ID }}/model" -n pubg_sentiment_model:latest
       env:
-        MLFLOW_TRACKING_URI: http://127.0.0.1:2026
+        MLFLOW_TRACKING_URI: http://127.0.0.1:5000
 
     - name: Upload MLruns Artifact
       uses: actions/upload-artifact@v4

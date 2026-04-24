@@ -22,12 +22,12 @@ warnings.filterwarnings('ignore')
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_PATH = os.path.join(BASE_DIR, "pubg_mobile_reviews_preprocessed.csv")
 
-# Set tracking URI to port 2026
-mlflow.set_tracking_uri("http://127.0.0.1:2026")
+# Set tracking URI to port 5000
+mlflow.set_tracking_uri("http://127.0.0.1:5000")
 mlflow.set_experiment("PUBG_Mobile_Sentiment_CI")
 
 print("=" * 60)
-print("  MODELLING - Workflow CI (Port 2026)")
+print("  MODELLING - Workflow CI (Port 5000)")
 print("=" * 60)
 
 # 1. Load Data
