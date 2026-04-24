@@ -1,17 +1,14 @@
 # DagsHub - MLflow Tracking Online
 
-Tautan DagsHub untuk MLflow Tracking UI secara online:
+Tautan DagsHub Repository:
+https://dagshub.com/MuhammadRizalNurfirdaus/Eksperimen_SML_Muhammad_Rizal_Nurfirdaus
 
-(Silakan isi dengan tautan DagsHub repository Anda setelah setup)
+Tautan MLflow Tracking UI (Online):
+https://dagshub.com/MuhammadRizalNurfirdaus/Eksperimen_SML_Muhammad_Rizal_Nurfirdaus.mlflow
 
-## Cara Setup DagsHub:
-1. Buat akun di https://dagshub.com
-2. Buat repository baru atau connect dari GitHub
-3. Dapatkan MLflow tracking URI dari DagsHub
-4. Ganti mlflow.set_tracking_uri() di modelling_tuning.py dengan URI DagsHub
-
-Contoh:
-```
+## Konfigurasi DagsHub di modelling_tuning.py:
+```python
 import dagshub
 dagshub.init(repo_owner='MuhammadRizalNurfirdaus', repo_name='Eksperimen_SML_Muhammad_Rizal_Nurfirdaus', mlflow=True)
+mlflow.set_experiment("PUBG_Mobile_Sentiment_Tuning")
 ```

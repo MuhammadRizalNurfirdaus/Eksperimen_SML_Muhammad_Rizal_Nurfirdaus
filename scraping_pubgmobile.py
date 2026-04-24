@@ -26,7 +26,7 @@ while len(all_reviews) < 15000:
 
 # Memproses data ke DataFrame
 data = []
-for r in result:
+for r in all_reviews:
     data.append({
         'review': r['content'],
         'rating': r['score'],

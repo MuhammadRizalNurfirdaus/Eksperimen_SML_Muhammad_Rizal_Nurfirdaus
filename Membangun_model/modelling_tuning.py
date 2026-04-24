@@ -45,8 +45,9 @@ DATA_PATH = os.path.join(BASE_DIR, "pubg_mobile_reviews_preprocessed.csv")
 ARTIFACTS_DIR = os.path.join(BASE_DIR, "mlflow_artifacts")
 os.makedirs(ARTIFACTS_DIR, exist_ok=True)
 
-# MLflow tracking lokal
-mlflow.set_tracking_uri("http://127.0.0.1:5000")
+# MLflow tracking via DagsHub (Advance)
+import dagshub
+dagshub.init(repo_owner='MuhammadRizalNurfirdaus', repo_name='Eksperimen_SML_Muhammad_Rizal_Nurfirdaus', mlflow=True)
 mlflow.set_experiment("PUBG_Mobile_Sentiment_Tuning")
 
 # ============================================================
