@@ -1,0 +1,8 @@
+# Tautan Docker Hub
+
+Karena build image Docker dikerjakan otomatis di GitHub Actions (menggunakan MLflow build-docker),
+pastikan Anda memeriksa tab **Actions** di repositori GitHub Anda untuk melihat log suksesnya.
+
+Jika workflow ini dikonfigurasi dengan Docker Hub credentials (DOCKER_USERNAME & DOCKER_PASSWORD) pada rahasia repositori (Secrets), 
+Docker Image akan terunggah ke:
+**https://hub.docker.com/r/<USERNAME>/pubg_sentiment_model**

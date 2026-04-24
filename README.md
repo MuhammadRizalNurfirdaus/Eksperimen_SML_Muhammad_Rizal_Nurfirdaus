@@ -25,7 +25,7 @@ Eksperimen_SML_Muhammad_Rizal_Nurfirdaus/
 ## Dataset
 
 - **Sumber**: Google Play Store (review PUBG Mobile)
-- **Jumlah**: ~1000 review
+- **Jumlah**: ~15000 review
 - **Kolom**: `review`, `rating`, `date`, `userName`
 - **Bahasa**: Indonesia
 
