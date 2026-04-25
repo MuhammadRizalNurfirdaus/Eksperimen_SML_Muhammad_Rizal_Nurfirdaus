@@ -1,0 +1,24 @@
+# Prometheus Configuration for ML Model Monitoring
+# File ini digunakan untuk mengkonfigurasi Prometheus agar dapat
+# melakukan scraping metrics dari ML model exporter.
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          app: 'prometheus'
+
+  # ML Model Exporter - PUBG Sentiment Analysis
+  - job_name: 'ml_model_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:8000']
+        labels:
+          app: 'pubg_sentiment_model'
+          environment: 'production'
