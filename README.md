@@ -13,8 +13,9 @@ Proyek ini merupakan **Sistem Machine Learning End-to-End** untuk melakukan anal
 ### Kriteria yang Diselesaikan:
 1. **Dataset & Preprocessing (Kriteria 1)**: Scraping >15,000 ulasan menggunakan `google_play_scraper`, pembersihan data teks, penghapusan *stopwords*, dan pelabelan otomatis.
 2. **Membangun Model Machine Learning (Kriteria 2)**: Eksperimen model (Logistic Regression & TF-IDF) dan *hyperparameter tuning* dengan tracking komprehensif menggunakan **MLflow** (DagsHub terintegrasi).
-3. **Continuous Integration (CI) Pipeline (Kriteria 3)**: Otomatisasi *training*, *tracking*, ekstraksi Run ID terbaik, *build* Docker Image, dan *push* ke Docker Hub menggunakan **GitHub Actions**.
-4. **Monitoring & Logging (Kriteria 4)**: Sistem pemantauan performa model secara real-time menggunakan **Prometheus** (mengekspos 12 metriks kustom) dan **Grafana** (12 panel visualisasi dan 3 *alert rules* otomatis).
+3. **Monitoring & Logging (Kriteria 4)**: Sistem pemantauan performa model secara real-time menggunakan **Prometheus** (mengekspos 12 metriks kustom) dan **Grafana** (12 panel visualisasi dan 3 *alert rules* otomatis).
+
+*(Catatan: Pipeline CI/CD untuk proyek ini telah dipisahkan ke repositori khusus `Workflow-CI` sesuai instruksi kriteria).*
 
 ---
 
@@ -22,13 +23,12 @@ Proyek ini merupakan **Sistem Machine Learning End-to-End** untuk melakukan anal
 
 ```text
 Eksperimen_SML_Muhammad_Rizal_Nurfirdaus/
-├── .github/workflows/              # GitHub Actions CI/CD pipelines
+├── .github/workflows/              # GitHub Actions (Automasi Preprocessing)
 ├── Membangun_model/                # Script training, tuning, & integrasi MLflow (DagsHub)
 ├── Monitoring dan Logging/         # Flask Exporter, Prometheus config, Grafana JSON, & Bukti
 ├── preprocessing/                  # Notebook eksperimen & script preprocessing otomatis
 ├── pubg_mobile_reviews_preprocessing/ # Dataset hasil pembersihan (Preprocessed)
 ├── pubg_mobile_reviews_raw/        # Dataset mentah (Raw CSV)
-├── Workflow-CI/                    # Konfigurasi MLProject & CI workflow file
 ├── scraping_pubgmobile.py          # Script scraping data ulasan awal
 ├── requirements.txt                # Dependensi Python
 └── README.md                       # Dokumentasi Utama
@@ -115,20 +115,6 @@ python 3.prometheus_exporter.py
 Untuk mensimulasikan trafik *request* masuk agar Grafana menampilkan data:
 ```bash
 python 7.inference.py
-```
-
----
-
-## 🐳 Docker (CI/CD Artifacts)
-
-Jika Anda ingin langsung menjalankan model hasil pipeline GitHub Actions tanpa *setup* manual, Anda bisa menarik *image* dari Docker Hub:
-
-```bash
-# Pull image dari Docker Hub
-docker pull mrizaln/pubg_sentiment_model:latest
-
-# Jalankan container di port 8080
-docker run -p 8080:8080 mrizaln/pubg_sentiment_model:latest
 ```
 
 ---

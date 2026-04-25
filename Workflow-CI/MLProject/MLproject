@@ -1,7 +1,0 @@
-name: PUBG_Sentiment_Analysis
-
-conda_env: conda.yaml
-
-entry_points:
-  main:
-    command: "python modelling.py"
