@@ -136,4 +136,5 @@ docker run -p 8080:8080 mrizaln/pubg_sentiment_model:latest
 ## Author
 
 **Muhammad Rizal Nurfirdaus**
-- Peserta Dicoding Sains Machine Learning
+- Peserta Pijak in collaboration with IBM SkillsBuild
+- Kelas Membangun Sistem Machine Learning (Dicoding)
