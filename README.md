@@ -1,131 +1,139 @@
-# Eksperimen SML - Muhammad Rizal Nurfirdaus 021
+# End-to-End Machine Learning: Analisis Sentimen PUBG Mobile
 
-## Deskripsi
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue)
+![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
+![Prometheus](https://img.shields.io/badge/Prometheus-Monitoring-orange)
+![Grafana](https://img.shields.io/badge/Grafana-Dashboards-orange)
 
-Proyek eksperimen **Sains, Machine Learning (SML)** yang melakukan analisis sentimen terhadap review game **PUBG Mobile** dari Google Play Store. Dataset dikumpulkan menggunakan scraping `google_play_scraper` dan diproses melalui pipeline preprocessing untuk menghasilkan data yang siap digunakan untuk pelatihan model.
+## Deskripsi Proyek
 
-## Struktur Repository
+Proyek ini merupakan **Sistem Machine Learning End-to-End** untuk melakukan analisis sentimen terhadap ulasan game **PUBG Mobile** dari Google Play Store. Proyek ini dibangun untuk memenuhi kriteria tingkat **Advance (4 pts)** yang mencakup seluruh siklus hidup Machine Learning (MLOps).
 
-```
+### Kriteria yang Diselesaikan:
+1. **Dataset & Preprocessing (Kriteria 1)**: Scraping >15,000 ulasan menggunakan `google_play_scraper`, pembersihan data teks, penghapusan *stopwords*, dan pelabelan otomatis.
+2. **Membangun Model Machine Learning (Kriteria 2)**: Eksperimen model (Logistic Regression & TF-IDF) dan *hyperparameter tuning* dengan tracking komprehensif menggunakan **MLflow** (DagsHub terintegrasi).
+3. **Continuous Integration (CI) Pipeline (Kriteria 3)**: Otomatisasi *training*, *tracking*, ekstraksi Run ID terbaik, *build* Docker Image, dan *push* ke Docker Hub menggunakan **GitHub Actions**.
+4. **Monitoring & Logging (Kriteria 4)**: Sistem pemantauan performa model secara real-time menggunakan **Prometheus** (mengekspos 12 metriks kustom) dan **Grafana** (12 panel visualisasi dan 3 *alert rules* otomatis).
+
+---
+
+## Struktur Repositori
+
+```text
 Eksperimen_SML_Muhammad_Rizal_Nurfirdaus/
-├── .github/workflows/
-│   ├── preprocessing.yml              # GitHub Actions untuk automated preprocessing
-│   └── mlflow_ci.yml                  # GitHub Actions untuk CI model training + Docker
-├── pubg_mobile_reviews_raw/
-│   └── pubg_mobile_reviews.csv         # Dataset mentah (raw)
-├── preprocessing/
-│   ├── Eksperimen_Muhammad_Rizal_Nurfirdaus.ipynb  # Notebook eksperimen
-│   └── automate_Muhammad_Rizal_Nurfirdaus.py       # Script otomatis preprocessing
-├── pubg_mobile_reviews_preprocessing/
-│   └── pubg_mobile_reviews_preprocessed.csv        # Dataset hasil preprocessing
-├── Membangun_model/
-│   ├── modelling.py                    # Script training model (lokal)
-│   ├── modelling_tuning.py             # Script training model dengan tuning
-│   ├── requirements.txt                # Dependencies model
-│   └── mlflow_artifacts/               # Artefak hasil training
-├── Workflow-CI/
-│   ├── .workflow/
-│   │   └── mlflow_ci.yml               # Copy workflow CI
-│   └── MLProject/
-│       ├── modelling.py                # Script training untuk CI
-│       ├── conda.yaml                  # Conda environment
-│       ├── MLproject                   # MLflow project config
-│       ├── pubg_mobile_reviews_preprocessed.csv  # Dataset preprocessing
-│       └── Docker_Hub_Link.txt         # Tautan ke Docker Hub
-├── scraping_pubgmobile.py              # Script scraping data
-├── requirements.txt                    # Dependencies
-└── README.md
+├── .github/workflows/              # GitHub Actions CI/CD pipelines
+├── Membangun_model/                # Script training, tuning, & integrasi MLflow (DagsHub)
+├── Monitoring dan Logging/         # Flask Exporter, Prometheus config, Grafana JSON, & Bukti
+├── preprocessing/                  # Notebook eksperimen & script preprocessing otomatis
+├── pubg_mobile_reviews_preprocessing/ # Dataset hasil pembersihan (Preprocessed)
+├── pubg_mobile_reviews_raw/        # Dataset mentah (Raw CSV)
+├── Workflow-CI/                    # Konfigurasi MLProject & CI workflow file
+├── scraping_pubgmobile.py          # Script scraping data ulasan awal
+├── requirements.txt                # Dependensi Python
+└── README.md                       # Dokumentasi Utama
 ```
 
-## Dataset
+---
 
-- **Sumber**: Google Play Store (review PUBG Mobile)
-- **Jumlah**: ~15000 review
-- **Kolom**: `review`, `rating`, `date`, `userName`
-- **Bahasa**: Indonesia
+## 🚀 Panduan Instalasi (Git Clone)
 
-## Tahapan Preprocessing
+Ikuti langkah-langkah di bawah ini untuk mengkloning repositori dan mengatur *environment* lokal Anda.
 
-1. **Data Loading** — Memuat dataset CSV
-2. **Data Cleaning** — Lowercase, hapus URL, emoji, special chars, angka
-3. **Stopword Removal** — Menghapus stopwords Bahasa Indonesia (NLTK + custom)
-4. **Sentiment Labeling** — Rating 1-2: negatif, 3: netral, 4-5: positif
-5. **Export** — Menyimpan hasil ke CSV
+### Untuk Pengguna Windows
 
-## Workflow CI (MLflow Project)
+Buka **Command Prompt (CMD)** atau **PowerShell**, lalu jalankan perintah berikut secara berurutan:
 
-### Cara Kerja
+```cmd
+:: 1. Clone repositori
+git clone https://github.com/MuhammadRizalNurfirdaus/Eksperimen_SML_Muhammad_Rizal_Nurfirdaus.git
 
-Pipeline CI otomatis berjalan ketika ada perubahan pada `Workflow-CI/MLProject/**` atau trigger manual (`workflow_dispatch`).
+:: 2. Masuk ke direktori proyek
+cd Eksperimen_SML_Muhammad_Rizal_Nurfirdaus
 
-**Tahapan Pipeline:**
-1. **Setup** — Checkout repo, install Python 3.11 dan dependencies
-2. **MLflow Server** — Jalankan MLflow tracking server di port 5000
-3. **Train Model** — Jalankan `mlflow run .` untuk melatih model Logistic Regression
-4. **Extract Run ID** — Baca Run ID dari `run_id.txt` yang disimpan oleh `modelling.py`
-5. **Upload Artifacts** — Simpan mlruns dan artefak ke GitHub Actions Artifacts
-6. **Build Docker** — Bangun Docker image menggunakan `mlflow models build-docker`
-7. **Push to Docker Hub** — Push image ke Docker Hub
+:: 3. Buat Virtual Environment
+python -m venv venv
 
-### GitHub Secrets yang Diperlukan
+:: 4. Aktivasi Virtual Environment
+venv\Scripts\activate
 
-| Secret | Keterangan |
-|--------|-----------|
-| `DOCKER_USERNAME` | Username Docker Hub |
-| `DOCKER_PASSWORD` | Access token Docker Hub |
-
-### Docker Hub
-
-Docker Image: `<DOCKER_USERNAME>/pubg_sentiment_model:latest`
-
-```bash
-# Pull image
-docker pull <DOCKER_USERNAME>/pubg_sentiment_model:latest
-
-# Run container
-docker run -p 8080:8080 <DOCKER_USERNAME>/pubg_sentiment_model:latest
-```
-
-## Cara Menjalankan
-
-### Prerequisites
-
-```bash
+:: 5. Install semua dependensi
 pip install -r requirements.txt
 ```
 
-### Jalankan Preprocessing Otomatis
+### Untuk Pengguna Linux / macOS
 
+Buka **Terminal**, lalu jalankan perintah berikut secara berurutan:
+
+```bash
+# 1. Clone repositori
+git clone https://github.com/MuhammadRizalNurfirdaus/Eksperimen_SML_Muhammad_Rizal_Nurfirdaus.git
+
+# 2. Masuk ke direktori proyek
+cd Eksperimen_SML_Muhammad_Rizal_Nurfirdaus
+
+# 3. Buat Virtual Environment
+python3 -m venv venv
+
+# 4. Aktivasi Virtual Environment
+source venv/bin/activate
+
+# 5. Install semua dependensi
+pip install -r requirements.txt
+```
+
+---
+
+## 🛠️ Cara Menjalankan Pipeline
+
+### 1. Preprocessing Otomatis
+Untuk membersihkan data mentah menjadi data siap *train*:
 ```bash
 python preprocessing/automate_Muhammad_Rizal_Nurfirdaus.py
 ```
 
-### Jalankan Model Training (Lokal)
-
+### 2. Training Model & MLflow Tracking
+Jalankan MLflow UI di satu terminal:
+```bash
+mlflow ui --host 0.0.0.0 --port 5000
+```
+Buka terminal baru (pastikan *venv* aktif), masuk ke folder `Membangun_model`, dan jalankan:
 ```bash
 cd Membangun_model
-mlflow server --host 127.0.0.1 --port 5000 &
 python modelling.py
 ```
 
-### Notebook Eksperimen
+### 3. Monitoring (Prometheus & Grafana)
+*Pastikan Prometheus dan Grafana sudah terinstal di sistem Anda.*
+Jalankan *exporter* untuk melayani model dan mengekspos metriks:
+```bash
+cd "Monitoring dan Logging"
+python 3.prometheus_exporter.py
+```
+*(Server akan berjalan di `http://localhost:8000`)*
 
-Buka `preprocessing/Eksperimen_Muhammad_Rizal_Nurfirdaus.ipynb` di Jupyter Notebook atau Google Colab.
+Untuk mensimulasikan trafik *request* masuk agar Grafana menampilkan data:
+```bash
+python 7.inference.py
+```
 
-## GitHub Actions
+---
 
-### 1. Preprocessing Workflow
-Workflow otomatis akan berjalan ketika:
-- Ada push ke branch `main` yang mengubah dataset raw atau script automate
-- Trigger manual via `workflow_dispatch`
+## 🐳 Docker (CI/CD Artifacts)
 
-### 2. MLflow CI Pipeline
-Workflow otomatis akan berjalan ketika:
-- Ada push yang mengubah file di `Workflow-CI/MLProject/`
-- Trigger manual via `workflow_dispatch`
+Jika Anda ingin langsung menjalankan model hasil pipeline GitHub Actions tanpa *setup* manual, Anda bisa menarik *image* dari Docker Hub:
 
-Pipeline akan melatih model, menyimpan artefak, dan membuat Docker image.
+```bash
+# Pull image dari Docker Hub
+docker pull mrizaln/pubg_sentiment_model:latest
+
+# Jalankan container di port 8080
+docker run -p 8080:8080 mrizaln/pubg_sentiment_model:latest
+```
+
+---
 
 ## Author
 
 **Muhammad Rizal Nurfirdaus**
+- Peserta Dicoding Sains Machine Learning
