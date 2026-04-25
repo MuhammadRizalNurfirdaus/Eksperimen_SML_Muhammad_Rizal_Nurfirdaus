@@ -31,7 +31,6 @@ RUN_ID_PATH = os.path.join(BASE_DIR, "run_id.txt")
 # MLflow tracking URI — default ke port 5000, bisa di-override via env var
 TRACKING_URI = os.environ.get("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
 mlflow.set_tracking_uri(TRACKING_URI)
-mlflow.set_experiment("PUBG_Mobile_Sentiment_CI")
 
 print("=" * 60)
 print("  MODELLING - Workflow CI")
@@ -76,38 +75,73 @@ print(f"      Train: {X_train.shape[0]} | Test: {X_test.shape[0]}")
 print()
 
 # ============================================================
-# 4. Model Training with MLflow Autolog
+# 4. Model Training with MLflow
 # ============================================================
-print("[4/4] Training Logistic Regression with MLflow Autolog...")
+print("[4/4] Training Logistic Regression with MLflow...")
 
-mlflow.sklearn.autolog()
+# Detect if running inside `mlflow run` (active run already exists)
+active_run = mlflow.active_run()
 
-with mlflow.start_run(run_name="LogisticRegression_CI") as run:
-    # Train model
+if active_run:
+    # Running via `mlflow run .` — use the existing run context
+    print(f"      Using existing MLflow run: {active_run.info.run_id}")
+    run = active_run
+    
     model = LogisticRegression(max_iter=1000, random_state=42)
     model.fit(X_train, y_train)
-
-    # Predictions & Metrics
+    
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     report = classification_report(y_test, y_pred)
-
-    print(f"\n      Accuracy: {accuracy:.4f}")
-    print(f"\n      Classification Report:")
-    print(report)
-
-    # Log additional params
+    
+    # Log metrics and params manually
+    mlflow.log_metric("accuracy", accuracy)
+    mlflow.log_param("model_type", "LogisticRegression")
     mlflow.log_param("vectorizer", "TfidfVectorizer")
     mlflow.log_param("max_features", 5000)
     mlflow.log_param("ngram_range", "(1, 2)")
     mlflow.log_param("test_size", 0.2)
-
-    # Simpan Run ID ke file untuk digunakan CI pipeline
+    mlflow.log_param("max_iter", 1000)
+    
+    # Log model
+    mlflow.sklearn.log_model(model, "model")
+    
     run_id = run.info.run_id
-    with open(RUN_ID_PATH, "w") as f:
-        f.write(run_id)
-    print(f"\n      Run ID: {run_id}")
-    print(f"      Run ID saved to: {RUN_ID_PATH}")
+else:
+    # Running standalone (e.g., `python modelling.py`)
+    mlflow.set_experiment("PUBG_Mobile_Sentiment_CI")
+    
+    with mlflow.start_run(run_name="LogisticRegression_CI") as run:
+        model = LogisticRegression(max_iter=1000, random_state=42)
+        model.fit(X_train, y_train)
+        
+        y_pred = model.predict(X_test)
+        accuracy = accuracy_score(y_test, y_pred)
+        report = classification_report(y_test, y_pred)
+        
+        # Log metrics and params
+        mlflow.log_metric("accuracy", accuracy)
+        mlflow.log_param("model_type", "LogisticRegression")
+        mlflow.log_param("vectorizer", "TfidfVectorizer")
+        mlflow.log_param("max_features", 5000)
+        mlflow.log_param("ngram_range", "(1, 2)")
+        mlflow.log_param("test_size", 0.2)
+        mlflow.log_param("max_iter", 1000)
+        
+        # Log model
+        mlflow.sklearn.log_model(model, "model")
+        
+        run_id = run.info.run_id
+
+print(f"\n      Accuracy: {accuracy:.4f}")
+print(f"\n      Classification Report:")
+print(report)
+
+# Simpan Run ID ke file untuk digunakan CI pipeline
+with open(RUN_ID_PATH, "w") as f:
+    f.write(run_id)
+print(f"\n      Run ID: {run_id}")
+print(f"      Run ID saved to: {RUN_ID_PATH}")
 
 print()
 print("=" * 60)
