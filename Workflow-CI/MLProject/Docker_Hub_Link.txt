@@ -1,8 +1,29 @@
-# Tautan Docker Hub
+# Tautan Docker Hub - PUBG Mobile Sentiment Analysis Model
 
-Karena build image Docker dikerjakan otomatis di GitHub Actions (menggunakan MLflow build-docker),
-pastikan Anda memeriksa tab **Actions** di repositori GitHub Anda untuk melihat log suksesnya.
+Docker Image: https://hub.docker.com/r/<DOCKER_USERNAME>/pubg_sentiment_model
 
-Jika workflow ini dikonfigurasi dengan Docker Hub credentials (DOCKER_USERNAME & DOCKER_PASSWORD) pada rahasia repositori (Secrets), 
-Docker Image akan terunggah ke:
-**https://hub.docker.com/r/<USERNAME>/pubg_sentiment_model**
+## Cara Penggunaan
+
+### Pull Image
+```bash
+docker pull <DOCKER_USERNAME>/pubg_sentiment_model:latest
+```
+
+### Run Container
+```bash
+docker run -p 8080:8080 <DOCKER_USERNAME>/pubg_sentiment_model:latest
+```
+
+### Predict
+```bash
+curl -X POST http://localhost:8080/invocations \
+  -H "Content-Type: application/json" \
+  -d '{"inputs": ["game bagus sekali", "lag terus tidak bisa main"]}'
+```
+
+## Catatan
+- Docker Image di-build otomatis oleh GitHub Actions CI pipeline menggunakan `mlflow models build-docker`
+- Image berisi model Logistic Regression yang sudah dilatih pada 15000 review PUBG Mobile
+- Untuk menjalankan pipeline CI, pastikan GitHub Secrets sudah dikonfigurasi:
+  - `DOCKER_USERNAME`: Username Docker Hub Anda
+  - `DOCKER_PASSWORD`: Access token Docker Hub Anda

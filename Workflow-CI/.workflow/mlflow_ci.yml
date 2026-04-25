@@ -24,12 +24,16 @@ jobs:
         python -m pip install --upgrade pip
         pip install mlflow scikit-learn pandas numpy
 
-    - name: Run MLflow tracking server (Port 5000)
+    - name: Run MLflow tracking server
       run: |
-        mlflow server --host 127.0.0.1 --port 5000 --backend-store-uri sqlite:///mlflow_ci.db --default-artifact-root $GITHUB_WORKSPACE/mlruns &
-        sleep 5 # Wait for server to start
+        mlflow server \
+          --host 127.0.0.1 \
+          --port 5000 \
+          --backend-store-uri sqlite:///mlflow_ci.db \
+          --default-artifact-root $GITHUB_WORKSPACE/mlruns &
+        sleep 5
 
-    - name: Run MLflow Project
+    - name: Run MLflow Project (Train Model)
       run: |
         cd Workflow-CI/MLProject
         mlflow run . --env-manager local
@@ -39,18 +43,35 @@ jobs:
     - name: Extract Run ID
       id: extract_run
       run: |
-        RUN_ID=$(python -c "import mlflow; mlflow.set_tracking_uri('http://127.0.0.1:5000'); df = mlflow.search_runs(experiment_names=['PUBG_Mobile_Sentiment_CI']); print(df['run_id'][0])")
+        # Read run_id from file saved by modelling.py
+        RUN_ID=$(cat Workflow-CI/MLProject/run_id.txt)
         echo "MLFLOW_RUN_ID=$RUN_ID" >> $GITHUB_ENV
         echo "Run ID extracted: $RUN_ID"
 
-    - name: Build Docker Image using mlflow
-      run: |
-        mlflow models build-docker -m "runs:/${{ env.MLFLOW_RUN_ID }}/model" -n pubg_sentiment_model:latest
-      env:
-        MLFLOW_TRACKING_URI: http://127.0.0.1:5000
-
-    - name: Upload MLruns Artifact
+    - name: Upload MLflow Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: mlflow-artifacts
-        path: ./mlruns/
+        path: |
+          ./mlruns/
+          Workflow-CI/MLProject/run_id.txt
+
+    - name: Build Docker Image using mlflow
+      run: |
+        mlflow models build-docker \
+          -m "runs:/${{ env.MLFLOW_RUN_ID }}/model" \
+          -n pubg_sentiment_model:latest
+      env:
+        MLFLOW_TRACKING_URI: http://127.0.0.1:5000
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Tag and Push Docker Image to Docker Hub
+      run: |
+        docker tag pubg_sentiment_model:latest ${{ secrets.DOCKER_USERNAME }}/pubg_sentiment_model:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/pubg_sentiment_model:latest
+        echo "Docker image pushed to: https://hub.docker.com/r/${{ secrets.DOCKER_USERNAME }}/pubg_sentiment_model"
